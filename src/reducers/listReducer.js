@@ -3,6 +3,8 @@ const DELETE_CARD = 'DELETE_CARD'
 const ADD_SUBTASK = 'ADD_SUBTASK'
 const DELETE_SUBTASK = 'DELETE_SUBTASK'
 const SAVE_CHANGES = 'SAVE_CHANGES'
+const DRAG_HAPPENED = 'DRAG_HAPPENED'
+
 const initialState = [
     {
         id: 0,
@@ -76,7 +78,6 @@ export const listReducer = (state = initialState, action) => {
                         ...list,
                         cards: [...list.cards, {
                             id: list.cards.length + 8,
-                            belongsTo: list.id,
                             title: action.title,
                             main: action.main,
                             subTasks: [],
@@ -90,7 +91,25 @@ export const listReducer = (state = initialState, action) => {
 
         }
         case SAVE_CHANGES: {
-
+            const newState = state.map(list => {
+                if (list.id === action.ListId) {
+                    return {
+                        ...list,
+                        cards: [...list.cards.map(card => {
+                            if (card.id == action.CardId) {
+                                return {
+                                    ...card,
+                                    title: action.title,
+                                    main: action.main,
+                                }
+                            }
+                            else return card
+                        })]
+                    }
+                }
+                else return list
+            })
+            return newState
         }
         case DELETE_CARD: {
 
@@ -132,6 +151,24 @@ export const listReducer = (state = initialState, action) => {
             })
             return newState
         }
+        case DRAG_HAPPENED:
+            const {
+                droppableIdStart,
+                droppableIdEnd,
+                droppableIndexStart,
+                droppableIndexEnd,
+                draggableId
+            } = action.payload
+            const newState = [...state];
+
+            if (droppableIdStart === droppableIdEnd) { // same list
+                const list = state.find(item => item.id == droppableIdStart)
+
+                const card = list.cards.splice(droppableIndexStart, 1)
+                list.cards.splice(droppableIndexEnd, 0, ...card)
+            }
+            return newState
+
         default:
             return state
     }
@@ -147,3 +184,23 @@ export const SaveChangesAC = (ListId, CardId, TitleVAlue, MainValue) => ({
     title: TitleVAlue,
     main: MainValue,
 })
+export const SortAC = (
+    droppableIdStart,
+    droppableIdEnd,
+    droppableIndexStart,
+    droppableIndexEnd,
+    draggableId
+
+) => {
+    return {
+        type: 'DRAG_HAPPENED',
+        payload: {
+            droppableIdStart,
+            droppableIdEnd,
+            droppableIndexStart,
+            droppableIndexEnd,
+            draggableId
+        }
+
+    }
+}
