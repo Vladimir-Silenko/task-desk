@@ -39,7 +39,7 @@ export const Project = () => {
             <ProjectContainer>
                 {lists.map(item => {
                     return (
-                        <TaskColumn subs={item.subTasks} id={item.id} key={item.id} title={item.title} cards={item.cards} />
+                        <TaskColumn id={item.id} key={item.id} title={item.title} cards={item.cards} />
                     )
 
                     { }

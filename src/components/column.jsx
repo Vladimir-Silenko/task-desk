@@ -54,7 +54,6 @@ export const TaskColumn = (props) => {
                     <ListHeader>{props.title}</ListHeader>
                     {props.cards.map((card, index) => <Card
                         stat={props.title}
-                        subs={props.subs}
                         card={card}
                         index={index}
                         ListId={props.id}

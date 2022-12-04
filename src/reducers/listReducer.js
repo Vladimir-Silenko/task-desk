@@ -15,14 +15,15 @@ const initialState = [
                 title: 'Card1',
                 main: 'card1',
                 stat: '',
-                created: new Date().getTime()
+                created: new Date().getTime(),
+                subTasks: [
+                    { id: 1, belongsTo: 1, text: 'TExt' },
+                    { id: 2, belongsTo: 1, text: 'text' },
+                    { id: 3, belongsTo: 1, text: 'Text' },
+                ],
             },
         ],
-        subTasks: [
-            { id: 1, belongsTo: 1, text: '' },
-            { id: 2, belongsTo: 1, text: '' },
-            { id: 3, belongsTo: 1, text: '' },
-        ],
+
     },
     {
         id: 1,
@@ -33,24 +34,27 @@ const initialState = [
                 title: 'Card2',
                 main: 'card1',
                 stat: '',
-                created: new Date().getTime()
+                created: new Date().getTime(),
+                subTasks: []
             },
             {
                 id: 3,
                 title: 'Card2',
                 main: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, quae quo explicabo sapiente recusandae dicta ex aut? Repellendus, earum beatae! Cumque modi debitis minus earum ducimus et aperiam dolore dolorem!',
                 stat: '',
-                created: new Date().getTime()
+                created: new Date().getTime(),
+                subTasks: [{ id: 1, belongsTo: 4, text: 'Subtask' },],
             },
             {
                 id: 4,
                 title: 'Card2',
                 main: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, quae quo explicabo sapiente recusandae dicta ex aut? Repellendus, earum beatae! Cumque modi debitis minus earum ducimus et aperiam dolore dolorem!',
                 stat: '',
-                created: new Date().getTime()
+                created: new Date().getTime(),
+                subTasks: [{ id: 1, belongsTo: 4, text: 'Subtask' },],
             },
         ],
-        subTasks: [{ id: 1, belongsTo: 4, text: 'Subtask' },],
+
 
 
     },
@@ -63,10 +67,10 @@ const initialState = [
                 title: 'Card3',
                 main: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut, quae quo explicabo sapiente recusandae dicta ex aut? Repellendus, earum beatae! Cumque modi debitis minus earum ducimus et aperiam dolore dolorem!',
                 stat: '',
-                created: new Date().getTime()
+                created: new Date().getTime(),
+                subTasks: [{ id: 1, belongsTo: 4, text: 'Subtask' },],
             },
         ],
-        subTasks: [],
     },
 ]
 export const listReducer = (state = initialState, action) => {
@@ -130,7 +134,17 @@ export const listReducer = (state = initialState, action) => {
                 if (list.id === action.ListId) {
                     return {
                         ...list,
-                        subTasks: [...list.subTasks, { id: list.subTasks.length + 1, belongsTo: action.CardId, text: action.text }]
+                        cards: [...list.cards.map(card => {
+
+                            if (action.CardId == card.id) {
+                                console.log('yes')
+                                return {
+                                    ...card,
+                                    subTasks: [...card.subTasks, { id: Math.random(), text: action.text }]
+                                }
+                            }
+                            else return card
+                        })]
                     }
                 }
                 else return list
@@ -140,10 +154,16 @@ export const listReducer = (state = initialState, action) => {
         case DELETE_SUBTASK: {
             const newState = state.map(list => {
                 if (list.id === action.ListId) {
-                    console.log(action.SubTaskId)
                     return {
                         ...list,
-                        subTasks: [...list.subTasks.filter(item => item.id != action.SubTaskId)]
+                        cards: [...list.cards.map(card => {
+                            if (card.id == action.CardId) {
+                                return {
+                                    ...card,
+                                    subTasks: [...card.subTasks.filter(item => item.id != action.SubTaskId)]
+                                }
+                            }
+                        })]
 
                     }
                 }
@@ -176,7 +196,7 @@ export const listReducer = (state = initialState, action) => {
 export const SaveNewCardAc = (title, main) => ({ type: SAVE_NEW_CARD, title: title, main: main })
 export const DeleteCardAC = (CardId, ListId) => ({ type: DELETE_CARD, CardId: CardId, ListId: ListId })
 export const addSubAC = (ListId, CardId, text) => ({ type: ADD_SUBTASK, ListId: ListId, CardId: CardId, text: text })
-export const deleteSubAC = (ListId, SubTaskId) => ({ type: DELETE_SUBTASK, ListId: ListId, SubTaskId: SubTaskId })
+export const deleteSubAC = (ListId, SubTaskId, CardId) => ({ type: DELETE_SUBTASK, ListId: ListId, SubTaskId: SubTaskId, CardId: CardId })
 export const SaveChangesAC = (ListId, CardId, TitleVAlue, MainValue) => ({
     type: SAVE_CHANGES,
     ListId: ListId,

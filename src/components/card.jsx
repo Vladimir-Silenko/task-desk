@@ -67,7 +67,6 @@ export const Card = (props) => {
         {modalId == props.CardId &&
             <Modal
                 ListId={props.ListId}
-                subs={props.subs}
                 card={props.card}
                 setModalId={setModalId} />
         }

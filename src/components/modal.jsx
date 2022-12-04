@@ -58,8 +58,8 @@ export const Modal = ({ ListId, subs, card, setModalId, }) => {
         dispatch(addSubAC(ListId, CardId, text))
         setAddSub(false)
     }
-    const DeleteSub = (ListId, SubTaskId) => {
-        dispatch(deleteSubAC(ListId, SubTaskId))
+    const DeleteSub = (ListId, SubTaskId, CardId) => {
+        dispatch(deleteSubAC(ListId, SubTaskId, CardId))
     }
     const SaveChanges = (ListId, CardId, title, main) => {
         dispatch(SaveChangesAC(ListId, CardId, title, main))
@@ -85,16 +85,16 @@ export const Modal = ({ ListId, subs, card, setModalId, }) => {
                     </div>
                 </Section>
             }
-            {subs.map(item => {
-                if (item.belongsTo == card.id) {
-                    return <SubSection>
-                        <div>
-                            <input type="checkbox" name="subtask" id="" />
-                            {item.text}
-                        </div>
-                        <DeleteButton onClick={() => { DeleteSub(ListId, item.id) }}>×</DeleteButton>
-                    </SubSection>
-                }
+            {card.subTasks.map(item => {
+
+                return <SubSection>
+                    <div>
+                        <input type="checkbox" name="subtask" id="" />
+                        {item.text}
+                    </div>
+                    <DeleteButton onClick={() => { DeleteSub(ListId, item.id, card.id) }}>×</DeleteButton>
+                </SubSection>
+
             })}
             {
                 addSub ?
